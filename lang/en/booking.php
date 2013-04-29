@@ -7,7 +7,6 @@ $string['answered'] = 'Answered';
 $string['attachical'] = 'Attach ical events';
 $string['attachicaldesc'] = 'Email notifications will include an attached ical event, if this is enabled';
 $string['booking'] = 'Booking';
-$string['booking:addinstance'] = 'Add new booking';
 $string['booking:choose'] = 'Boook';
 $string['booking:deleteresponses'] = 'Delete responses';
 $string['booking:downloadresponses'] = 'Download responses';
@@ -87,6 +86,9 @@ $string['maxperuserwarning'] = 'You currently have {$a->count}/{$a->limit} maxim
 $string['bookedpast'] = 'Booked (course finished)';
 
 // mod_form
+//N.Horner
+$string['postcode'] = 'Location post code';
+//
 $string['limitanswers'] = 'Limit the number of participants';
 $string['maxparticipantsnumber'] = 'Max. number of participants';
 $string['maxoverbooking'] = 'Max. number of places on waiting list';

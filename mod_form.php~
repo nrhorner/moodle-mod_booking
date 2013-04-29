@@ -23,14 +23,24 @@ class mod_booking_mod_form extends moodleform_mod {
 		}
 		$mform->addRule('name', null, 'required', null, 'client');
 
-                $this->add_intro_editor(true, get_string('bookingtext', 'booking'));
-                
-                //-------N.Horner location test------------------------------------------------------
-                $mform->addElement('header', 'location', 'Location');
-                $mform->addElement('text', 'postcode', 'Postcode', array('size'=>'64'));
-                $mform->setType('postcode', PARAM_TEXT);//has no effect
-                $mform->addElement('text', 'streetnum', 'Street number',0);
-                //$mform->setType('streetnum', PARAM_INT); This gives no output
+        $this->add_intro_editor(true, get_string('bookingtext', 'booking'));
+
+		//---maps attempt------------------------------------------------------------------
+		
+		
+		$mform->addElement('header', '', 'Location','booking');
+		
+		
+		$mform->addElement('text', 'postcode', 'post code','booking',0);
+		//$mform->disabledIf('maxanswers', 'limitanswers', 0);
+		//Need to change setType?
+		$mform->setType('maxanswers', PARAM_INT);
+		
+		$mform->addElement('text', 'maxoverbooking', get_string('maxoverbooking','booking'),0);
+		$mform->disabledIf('maxoverbooking', 'limitanswers', 0);
+		$mform->setType('maxoverbooking', PARAM_INT);
+	
+
 		//-------------------------------------------------------------------------------
 		$menuoptions=array();
 		$menuoptions[0] = get_string('disable');

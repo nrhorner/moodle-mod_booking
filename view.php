@@ -127,6 +127,8 @@ $bookinglist = booking_get_spreadsheet_data($booking, $cm);
 
 echo '<div class="clearer"></div>';
 
+
+
 if ($booking->intro) {
 	echo $OUTPUT->box(format_module_intro('booking', $booking, $cm->id,true), 'generalbox', 'intro');
 }
@@ -154,6 +156,12 @@ if (has_capability('mod/booking:downloadresponses',$context)) {
 
 $current = false;  // Initialise for later
 //if user has already made a selection, show their selected answer.
+
+
+//N.Horner testing
+echo "postcode: ".$booking->postcode['text']."<br>";
+echo "streetnum: ". $booking->streetnum['text]'];
+
 
 /// Print the form
 $bookingopen = true;

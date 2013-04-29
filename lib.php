@@ -4,8 +4,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/mod/booking/icallib.php');
 
 $COLUMN_HEIGHT = 300;
-
-
+ 
 /// Standard functions /////////////////////////////////////////////////////////
 
 function booking_user_outline($course, $user, $mod, $booking) {
@@ -50,26 +49,41 @@ function booking_supports($feature) {
 
 function booking_add_instance($booking) {
 	global $DB;
+        
 	// Given an object containing all the necessary data,
 	// (defined by the form in mod.html) this function
 	// will create a new instance and return the id number
 	// of the new instance.
 
+        
 	$booking->timemodified = time();
 
 	if (empty($booking->timerestrict)) {
 		$booking->timeopen = 0;
 		$booking->timeclose = 0;
 	}
+        
 
-	// Copy the text fields out:
-	$booking->bookedtext = $booking->bookedtext['text'];
+	//N.Horner
+        $booking->postcode = $booking->postcode['text'];
+        $booking->streetnum = $booking->streetnum['text'];
+       
+        //$backtrace = debug_backtrace();
+        //print_r( $backtrace ); die;
+        
+        // Copy the text fields out: 
+	$booking->bookedtext = $booking->bookedtext['text']; 
 	$booking->waitingtext = $booking->waitingtext['text'];
 	$booking->statuschangetext = $booking->statuschangetext['text'];
 	$booking->deletedtext = $booking->deletedtext['text'];
-
+        
+       
+         
 	//insert answer options from mod_form
 	$booking->id = $DB->insert_record("booking", $booking);
+       
+       
+        
 	if(!empty($booking->option)){
 		foreach ($booking->option as $key => $value) {
 			$value = trim($value);
@@ -105,7 +119,11 @@ function booking_update_instance($booking) {
 		$booking->timeclose = 0;
 	}
 
-	// Copy the text fields out:
+	//N.Horner
+        $booking->postcode = $booking->postcode['text'];
+        $booking->streetnum = $booking->streetnum['text'];
+        
+        // Copy the text fields out:
 	$booking->bookedtext = $booking->bookedtext['text'];
 	$booking->waitingtext = $booking->waitingtext['text'];
 	$booking->statuschangetext = $booking->statuschangetext['text'];

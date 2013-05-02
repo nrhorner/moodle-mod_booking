@@ -48,17 +48,10 @@ tr.mod-booking-invisible {
 
 #id_address{
     /* hide the adrress on mod_form*/
-    display: none;
-}
-
-#id_address_formatted{
-    /* Its parent has an annoying margin of 180px */
+    /*display: none;*/
     margin-left: -180px;
+    height: 120px;
 }
-
-
-
-
 
 #hidemail, 
 #hidebookpol, 

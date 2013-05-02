@@ -40,7 +40,7 @@ class mod_booking_bookingform_form extends moodleform {
 		}
 		$mform->addElement('select', 'courseid', get_string("choosecourse", "booking"), $coursearray);
 
-		$mform->addElement('checkbox', 'startendtimeknown', get_string('startendtimeknown','booking'));
+		/*$mform->addElement('checkbox', 'startendtimeknown', get_string('startendtimeknown','booking'));
 
 		$mform->addElement('date_time_selector', 'coursestarttime', get_string("coursestarttime", "booking"));
 		$mform->setType('coursestarttime', PARAM_INT);
@@ -50,6 +50,9 @@ class mod_booking_bookingform_form extends moodleform {
 		$mform->setType('courseendtime', PARAM_INT);
 		$mform->disabledIf('courseendtime', 'startendtimeknown', 'notchecked');
 
+                *move to main form */
+                
+                
 		$mform->addElement('editor', 'description', get_string('description'));
 		$mform->setType('description', PARAM_CLEANHTML);
 

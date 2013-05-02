@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/booking/db" VERSION="20130501" COMMENT="XMLDB file for Moodle mod/booking"
+<XMLDB PATH="mod/booking/db" VERSION="20130502" COMMENT="XMLDB file for Moodle mod/booking"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -33,7 +33,9 @@
         <FIELD NAME="streetnum" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false" COMMENT="The street number of the activity location" PREVIOUS="postcode" NEXT="lat"/>
         <FIELD NAME="lat" TYPE="number" LENGTH="8" NOTNULL="false" SEQUENCE="false" DECIMALS="6" COMMENT="Latitude of event location. For displaying marker on maps" PREVIOUS="streetnum" NEXT="lng"/>
         <FIELD NAME="lng" TYPE="number" LENGTH="8" NOTNULL="false" SEQUENCE="false" DECIMALS="6" COMMENT="Longitude of event location. For displaying marker on maps" PREVIOUS="lat" NEXT="address"/>
-        <FIELD NAME="address" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The full text address of the event" PREVIOUS="lng"/>
+        <FIELD NAME="address" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The full text address of the event" PREVIOUS="lng" NEXT="dateandtime"/>
+        <FIELD NAME="dateandtime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The date of the event" PREVIOUS="address" NEXT="duration"/>
+        <FIELD NAME="duration" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The duration of the event" PREVIOUS="dateandtime"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

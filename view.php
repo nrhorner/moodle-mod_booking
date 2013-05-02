@@ -5,13 +5,15 @@ require_once("lib.php");
 require_once($CFG->libdir . '/completionlib.php');
 global $PAGE;
 $PAGE->requires->js(new moodle_url('https://maps.googleapis.com/maps/api/js?key=AIzaSyDbGJgtBEZqgKfji5iH0HGyd3RzO4-qVOc&sensor=true') );
-$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/booking/googlemaps_view.js') );
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/booking/googlemaps_view.js') );
+
+
 
 $id         = required_param('id', PARAM_INT);                 // Course Module ID
 $action     = optional_param('action', '', PARAM_ALPHA);
-$optionid = optional_param('optionid', '', PARAM_INT); 
-$confirm = optional_param('confirm', '',PARAM_INT); 
-$answer = optional_param('answer', '',PARAM_ALPHANUM);
+$optionid   = optional_param('optionid', '', PARAM_INT); 
+$confirm    = optional_param('confirm', '',PARAM_INT); 
+$answer     = optional_param('answer', '',PARAM_ALPHANUM);
 
 $url = new moodle_url('/mod/booking/view.php', array('id'=>$id));
 
@@ -133,6 +135,7 @@ $bookinglist = booking_get_spreadsheet_data($booking, $cm);
 echo '<div class="clearer"></div>';
 
 
+
 if ($booking->intro) {
 	echo $OUTPUT->box(format_module_intro('booking', $booking, $cm->id,true), 'generalbox', 'intro');
 }
@@ -162,10 +165,6 @@ if (has_capability('mod/booking:downloadresponses',$context)) {
 $current = false;  // Initialise for later
 //if user has already made a selection, show their selected answer.
 
-//----------------------map test
-    
-
-//-----------end map test
 
 /// Print the form
 $bookingopen = true;
@@ -207,25 +206,32 @@ if (!$bookingformshown) {
 	if (has_capability('mod/booking:updatebooking', $context)) {
 		$addoptionurl = new moodle_url('editoptions.php', array('id'=>$cm->id, 'optionid'=> 'add'));
 		
-                //Google maps 
+                
+                //Google maps stuff--------------------------------------------------------------------------------------------
                 echo '<input type="hidden" id="lat" value="'.$booking->lat.'">'; //Not visible. Just for get the lat/long values
                 echo '<input type="hidden" id="lng" value="'.$booking->lng.'">';
                 
                 echo '<div id="map">';
                     echo '<div id="map-canvas" class="region-content" style="width: 500px; height: 500px; float: left"></div>';    
-                
-                    //Link to google website to get directions
-                    echo '<div target="_blank" id="mapdetails" style="float: left">';
-                        echo '<form style="display: inline" action="http://maps.google.com/maps?t=h&q=loc:'.$booking->lat.','.$booking->lng.'&z=17">'
+                    echo '<div target="_blank" id="mapdetails" style="float: left; margin:40px">';
+                        
+                       echo date('l j F, Y',$booking->dateandtime).'<br>';
+                       echo date('h:i a',$booking->dateandtime).'<br><br>';
+                       echo ('Duraton: '.$booking->duration.'<br><br>');
+                       
+                       //Non-editable address
+                       echo '<div id="viewAddress"'.str_replace(', ','<br>',$booking->address).'</div><br><br>';
+                       
+                       //Link to Google directions
+                       echo '<form style="display: inline" action="http://maps.google.com/maps?t=h&q=loc:'.$booking->lat.','.$booking->lng.'&z=17">'
                                 .'<input type="hidden" name="q" value="to&#58;'.$booking->lat.','.$booking->lng. '"/>'
                                 .'<input type="hidden" name="z" value="17" />'
                         .'<div><input type="submit" value="Get directions"></div>
                          </form>' ;
-                       echo '<div id="viewAddress" style="margin:40px">'.str_replace(', ','<br>',$booking->address).'</div>';
-                    echo '</div>';
-                  //Address box
-                //echo '<div class="clearer"></div>';
+                   
+                echo '</div>';
                 
+                //---------------------------------------------------------------------------------------------------------------
                
                 
                 
@@ -234,8 +240,8 @@ if (!$bookingformshown) {
 		//echo $OUTPUT->single_button($addoptionurl,get_string('addnewbookingoption','booking'),'get');
 		//echo '</div>';
 	}
-		//echo $OUTPUT->box("<a href=\"http://www.edulabs.org\">".get_string('createdby','booking')."</a>",'box mdl-align');
-                //echo $OUTPUT->box("<a href=\"http://www.edulabs.org\">".get_string('createdby','booking')."</a>",'box mdl-align');
+		echo $OUTPUT->box("<a href=\"http://www.edulabs.org\">".get_string('createdby','booking')."</a>",'box mdl-align');
+                
         
                 //
 //echo '<div class="clearer"></div>';

@@ -39,3 +39,34 @@ tr.mod-booking-invisible {
   height: 0;
   display: none;
 }
+
+/* needed to prevent squashing of images in maps */
+#map-canvas img {
+  max-width: none;
+  height: auto
+}
+
+#id_address{
+    /* hide the adrress on mod_form*/
+    display: none;
+}
+
+#id_address_formatted{
+    /* Its parent has an annoying margin of 180px */
+    margin-left: -180px;
+}
+
+
+
+
+
+#hidemail, 
+#hidebookpol, 
+#modstandardelshd,
+#id_lat,
+#id_lng,
+#fitem_id_lat,
+#fitem_id_lng
+{
+    display: none;
+}

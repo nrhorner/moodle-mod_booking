@@ -63,13 +63,12 @@ function booking_add_instance($booking) {
 		$booking->timeclose = 0;
 	}
         
-
-	//N.Horner
-        $booking->postcode = $booking->postcode['text'];
-        $booking->streetnum = $booking->streetnum['text'];
        
-        //$backtrace = debug_backtrace();
-        //print_r( $backtrace ); die;
+	//N.Horner
+        //convert lat and long to float
+        $booking->lat = unformat_float($booking->lat);
+        $booking->lng = unformat_float($booking->lng);
+       
         
         // Copy the text fields out: 
 	$booking->bookedtext = $booking->bookedtext['text']; 
@@ -81,7 +80,7 @@ function booking_add_instance($booking) {
          
 	//insert answer options from mod_form
 	$booking->id = $DB->insert_record("booking", $booking);
-       
+         //var_dump(get_object_vars($booking));die;
        
         
 	if(!empty($booking->option)){

@@ -3,6 +3,9 @@
 require_once("../../config.php");
 require_once("lib.php");
 require_once($CFG->libdir . '/completionlib.php');
+global $PAGE;
+$PAGE->requires->js(new moodle_url('https://maps.googleapis.com/maps/api/js?key=AIzaSyDbGJgtBEZqgKfji5iH0HGyd3RzO4-qVOc&sensor=true') );
+$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/booking/googlemaps_view.js') );
 
 $id         = required_param('id', PARAM_INT);                 // Course Module ID
 $action     = optional_param('action', '', PARAM_ALPHA);
@@ -53,6 +56,7 @@ if ($action == 'delbooking' and confirm_sesskey() && $confirm == 1 and has_capab
 		$newbookeduser = booking_check_statuschange($optionid, $booking, $USER->id, $cm->id);
 		if(booking_delete_singlebooking($answer,$booking,$optionid,$newbookeduser,$cm->id)){
 			echo $OUTPUT->header();
+                       
 			$contents = get_string('bookingdeleted','booking');
 			$contents .= $OUTPUT->single_button($url, get_string('continue'),'get');
 			echo $OUTPUT->box($contents, 'box generalbox', 'notice');
@@ -78,6 +82,7 @@ if ($form = data_submitted() && has_capability('mod/booking:choose', $context) &
 $PAGE->set_title(format_string($booking->name));
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
+
 
 // check if custom user profile fields are required and redirect to complete them if necessary
 if (has_capability('moodle/user:editownprofile', $context, NULL, false) and booking_check_user_profile_fields($USER->id) and !has_capability('moodle/site:doanything', $context)){
@@ -128,7 +133,6 @@ $bookinglist = booking_get_spreadsheet_data($booking, $cm);
 echo '<div class="clearer"></div>';
 
 
-
 if ($booking->intro) {
 	echo $OUTPUT->box(format_module_intro('booking', $booking, $cm->id,true), 'generalbox', 'intro');
 }
@@ -152,16 +156,16 @@ if (has_capability('mod/booking:downloadresponses',$context)) {
 	$button = $OUTPUT->single_button(new moodle_url("report.php", $options), get_string("downloadexcel"));
 	echo html_writer::tag('span', $button, array('style' => 'text-align: right; display:table-cell;'));
 	echo '</div>';
+        
 }
 
 $current = false;  // Initialise for later
 //if user has already made a selection, show their selected answer.
 
+//----------------------map test
+    
 
-//N.Horner testing
-echo "postcode: ".$booking->postcode['text']."<br>";
-echo "streetnum: ". $booking->streetnum['text]'];
-
+//-----------end map test
 
 /// Print the form
 $bookingopen = true;
@@ -196,17 +200,48 @@ if ( !$current and $bookingopen and has_capability('mod/booking:choose', $contex
 	$bookingformshown = false;
 }
 
+
 if (!$bookingformshown) {
 	echo $OUTPUT->box(get_string("norighttobook", "booking"));
 }
 	if (has_capability('mod/booking:updatebooking', $context)) {
 		$addoptionurl = new moodle_url('editoptions.php', array('id'=>$cm->id, 'optionid'=> 'add'));
-		echo '<div style="width: 100%; text-align: center;">';
-		echo $OUTPUT->single_button($addoptionurl,get_string('addnewbookingoption','booking'),'get');
-		echo '</div>';
+		
+                //Google maps 
+                echo '<input type="hidden" id="lat" value="'.$booking->lat.'">'; //Not visible. Just for get the lat/long values
+                echo '<input type="hidden" id="lng" value="'.$booking->lng.'">';
+                
+                echo '<div id="map">';
+                    echo '<div id="map-canvas" class="region-content" style="width: 500px; height: 500px; float: left"></div>';    
+                
+                    //Link to google website to get directions
+                    echo '<div target="_blank" id="mapdetails" style="float: left">';
+                        echo '<form style="display: inline" action="http://maps.google.com/maps?t=h&q=loc:'.$booking->lat.','.$booking->lng.'&z=17">'
+                                .'<input type="hidden" name="q" value="to&#58;'.$booking->lat.','.$booking->lng. '"/>'
+                                .'<input type="hidden" name="z" value="17" />'
+                        .'<div><input type="submit" value="Get directions"></div>
+                         </form>' ;
+                       echo '<div id="viewAddress" style="margin:40px">'.str_replace(', ','<br>',$booking->address).'</div>';
+                    echo '</div>';
+                  //Address box
+                //echo '<div class="clearer"></div>';
+                
+               
+                
+                
+                
+                echo '<div class="clearer"></div>';
+		//echo $OUTPUT->single_button($addoptionurl,get_string('addnewbookingoption','booking'),'get');
+		//echo '</div>';
 	}
-		echo $OUTPUT->box("<a href=\"http://www.edulabs.org\">".get_string('createdby','booking')."</a>",'box mdl-align');
+		//echo $OUTPUT->box("<a href=\"http://www.edulabs.org\">".get_string('createdby','booking')."</a>",'box mdl-align');
+                //echo $OUTPUT->box("<a href=\"http://www.edulabs.org\">".get_string('createdby','booking')."</a>",'box mdl-align');
+        
+                //
+//echo '<div class="clearer"></div>';
+//
 echo $OUTPUT->footer();
-
+//--------Add Google maps using my manipullating DOm with JS
+//
 
 ?>

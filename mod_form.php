@@ -4,6 +4,10 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 require_once ($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->libdir . '/pagelib.php');
+global $PAGE;
+$PAGE->requires->js(new moodle_url('https://maps.googleapis.com/maps/api/js?key=AIzaSyDbGJgtBEZqgKfji5iH0HGyd3RzO4-qVOc&sensor=true') );
+$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/booking/googlemaps.js') );
 
 class mod_booking_mod_form extends moodleform_mod {
 
@@ -25,12 +29,31 @@ class mod_booking_mod_form extends moodleform_mod {
 
                 $this->add_intro_editor(true, get_string('bookingtext', 'booking'));
                 
-                //-------N.Horner location test------------------------------------------------------
-                $mform->addElement('header', 'location', 'Location');
-                $mform->addElement('text', 'postcode', 'Postcode', array('size'=>'64'));
-                $mform->setType('postcode', PARAM_TEXT);//has no effect
-                $mform->addElement('text', 'streetnum', 'Street number',0);
-                //$mform->setType('streetnum', PARAM_INT); This gives no output
+
+                //-----------------------------------maps
+                $mform->addElement('header', '', 'Location');
+                //TODO add moodle entry forms for lat-long so it can be taken for DB
+
+                $mform->addElement('text', 'lat', '');
+                $mform->setType('lat', PARAM_RAW);
+
+                $mform->addElement('text', 'lng', '');
+                $mform->setType('lng', PARAM_RAW);
+
+                $mform->addElement('html', 
+              '<div id="panel" style="float:right">
+                    <input onkeyup="addressKeyUp(event)" size="80" id="address" type="textbox" value="12 BN1 4JA"><br>
+                    <input type="button" value="Lookup address" onclick="codeAddress()">');                               
+                    
+                $mform->addElement('textarea', 'address_formatted', '',  'wrap="virtual" rows="15" cols="50"'); //displays formated text - split inti lines
+                $mform->addElement('text', 'address', ''); //Stores the formated text for entry into DB
+                $mform->addElement('html', '</div>');
+                $mform->addElement('html', '<div id="map-canvas" class="region-content" style="width: 500px; height: 500px; float: left"/>'); 
+                
+                
+       
+        //---------------------------------------
+            
 		//-------------------------------------------------------------------------------
 		$menuoptions=array();
 		$menuoptions[0] = get_string('disable');
@@ -57,20 +80,24 @@ class mod_booking_mod_form extends moodleform_mod {
 		$mform->disabledIf('timeopen', 'timerestrict');
 
 		$mform->addElement('date_time_selector', 'timeclose', get_string("bookingclose", "booking"));
-		$mform->disabledIf('timeclose', 'timerestrict');
+		$mform->disabledIf('timeclose', 'timerestrict'); 
 		
-		//-------------------------------------------------------------------------------
-		// CONFIRMATION MESSAGE
-        $mform->addElement('header', 'confirmation', get_string('confirmationmessagesettings', 'booking'));
-		
-        $mform->addElement('selectyesno', 'sendmail', get_string("sendconfirmmail", "booking"));
-		
-        $mform->addElement('selectyesno', 'copymail', get_string("sendconfirmmailtobookingmanger", "booking"));
+		//-------------------------------------------------------------------------------Booking policy
 
-		$mform->addElement('text', 'bookingmanager', get_string('usernameofbookingmanager', 'booking'));
-        $mform->setType('bookingmanager', PARAM_TEXT);
-		$mform->setDefault('bookingmanager', 'admin');
-		$mform->disabledIf('bookingmanager', 'copymail', 0);
+		// CONFIRMATION MESSAGE
+                
+                $mform->addElement('header', 'confirmation', get_string('confirmationmessagesettings', 'booking'));
+                $mform->addElement('html', '<input type="checkbox" name="confmail_chk" id="confmail_chkbox" onchange="emailCheckBoxes(this)">Edit default confirmation messages?<br>');
+                $mform->addElement('html', '<div id="hidemail">');
+                
+                $mform->addElement('selectyesno', 'sendmail', get_string("sendconfirmmail", "booking"));
+
+                $mform->addElement('selectyesno', 'copymail', get_string("sendconfirmmailtobookingmanger", "booking"));
+
+                $mform->addElement('text', 'bookingmanager', get_string('usernameofbookingmanager', 'booking'));
+                $mform->setType('bookingmanager', PARAM_TEXT);
+                        $mform->setDefault('bookingmanager', 'admin');
+                        $mform->disabledIf('bookingmanager', 'copymail', 0);
 
         // Add the fields to allow editing of the default text:
         $context = get_context_instance(CONTEXT_SYSTEM);
@@ -107,6 +134,7 @@ class mod_booking_mod_form extends moodleform_mod {
         $mform->addHelpButton('waitingtext', 'waitingtext', 'mod_booking');
 
         $mform->addElement('editor', 'statuschangetext', get_string('statuschangetext', 'booking'), null, $editoroptions);
+       
         $default = array(
             'text' => get_string('statuschangebookedmessage', 'mod_booking', $fieldmapping),
             'format' => FORMAT_HTML
@@ -123,12 +151,17 @@ class mod_booking_mod_form extends moodleform_mod {
         $default['text'] = str_replace("\n", '<br/>', $default['text']);
         $mform->setDefault('deletedtext', $default);
         $mform->addHelpButton('deletedtext', 'deletedtext', 'mod_booking');
+        
+        $mform->addElement('html', '</div>');//end hid div
+        
+        //-------------------------------------------------------------------------------
+	$mform->addElement('header', 'miscellaneoussettingshdr', get_string('miscellaneoussettings', 'form'));
+        $mform->addElement('html', '<input type="checkbox" name="bookpol_chk" id="bookpol_chkbox" onchange="bookPolCheckbox(this)">Add a default booking policy?');
+        $mform->addElement('html','<div id="hidebookpol">');
 
-		//-------------------------------------------------------------------------------
-		$mform->addElement('header', 'miscellaneoussettingshdr', get_string('miscellaneoussettings', 'form'));
-
-		$mform->addElement('editor', 'bookingpolicy', get_string("bookingpolicy", "booking"), null, null);
+	$mform->addElement('editor', 'bookingpolicy', get_string("bookingpolicy", "booking"), null, null);
         $mform->setType('bookingpolicy', PARAM_CLEANHTML);
+        $mform->addElement('html','</div>');//end hide
 
         $mform->addElement('selectyesno', 'allowupdate', get_string("allowdelete", "booking"));
 
@@ -141,11 +174,17 @@ class mod_booking_mod_form extends moodleform_mod {
         $mform->addElement('select', 'maxperuser', get_string('maxperuser', 'mod_booking'), $opts);
         $mform->setDefault('maxperuser', 0);
         $mform->addHelpButton('maxperuser', 'maxperuser', 'mod_booking');
-		
+	
+
+        
+       
+        //$mform->addElement('header', '', 'Event location');
+        //$mform->addElement('html', include('googlemaps.html'));
 		//-------------------------------------------------------------------------------
         $this->standard_coursemodule_elements();
 		//-------------------------------------------------------------------------------
 		$this->add_action_buttons();
+       
 	}
 
 	function data_preprocessing(&$default_values){
@@ -175,15 +214,16 @@ class mod_booking_mod_form extends moodleform_mod {
             $default_values['deletedtext'] = array('text' => $default_values['deletedtext'], 'format' => FORMAT_HTML);
         }
 	}
-
+       
     function get_data() {
         $data = parent::get_data();
         if ($data) {
             $data->bookingpolicyformat = $data->bookingpolicy['format'];
             $data->bookingpolicy = $data->bookingpolicy['text'];
         }
-        
+      
         return $data;
     }
+    
 }
 ?>

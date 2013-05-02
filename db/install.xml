@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/booking/db" VERSION="20130428" COMMENT="XMLDB file for Moodle mod/booking"
+<XMLDB PATH="mod/booking/db" VERSION="20130501" COMMENT="XMLDB file for Moodle mod/booking"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -30,7 +30,10 @@
         <FIELD NAME="deletedtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The content of the email to send to the users when a booking has been cancelled" PREVIOUS="statuschangetext" NEXT="maxperuser"/>
         <FIELD NAME="maxperuser" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Maximum number of bookings that each user can make (reset when an event passes)" PREVIOUS="deletedtext" NEXT="postcode"/>
         <FIELD NAME="postcode" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The postcode for the activity location" PREVIOUS="maxperuser" NEXT="streetnum"/>
-        <FIELD NAME="streetnum" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false" COMMENT="The street number of the activity location" PREVIOUS="postcode"/>
+        <FIELD NAME="streetnum" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false" COMMENT="The street number of the activity location" PREVIOUS="postcode" NEXT="lat"/>
+        <FIELD NAME="lat" TYPE="number" LENGTH="8" NOTNULL="false" SEQUENCE="false" DECIMALS="6" COMMENT="Latitude of event location. For displaying marker on maps" PREVIOUS="streetnum" NEXT="lng"/>
+        <FIELD NAME="lng" TYPE="number" LENGTH="8" NOTNULL="false" SEQUENCE="false" DECIMALS="6" COMMENT="Longitude of event location. For displaying marker on maps" PREVIOUS="lat" NEXT="address"/>
+        <FIELD NAME="address" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The full text address of the event" PREVIOUS="lng"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
